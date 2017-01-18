@@ -1,4 +1,4 @@
-contract("FemtoFemtoDB", function(accounts) {
+contract("FemtoDB", function(accounts) {
   it("should store information for each account separately", function(done) {
     var target = accounts[2];
     var key = 23;
@@ -105,5 +105,23 @@ contract("FemtoFemtoDB", function(accounts) {
           then(function() { return db.put(target, key, value) }).
           catch(done);
         });
+  });
+
+  it("should not allow external calls to private _put function", function(done) {
+    FemtoDB.new().
+      then(function(db) { return db._put(accounts[1], accounts[1], 1, 2) }).
+      then(assert.fail, function(err) { done(); }).catch(done);
+  });
+
+  it("should not allow external calls to private _store function", function(done) {
+    FemtoDB.new().
+      then(function(db) { return db._store(42, 23) }).
+      then(assert.fail, function(err) { done(); }).catch(done);
+  });
+
+  it("should not allow external calls to private _incrementRevisionID function", function(done) {
+    FemtoDB.new().
+      then(function(db) { return db._incrementRevisionID() }).
+      then(assert.fail, function(err) { done(); }).catch(done);
   });
 });
