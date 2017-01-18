@@ -7,11 +7,11 @@ contract FemtoDB {
   event LogPut(uint indexed revisionID, address indexed owner, address indexed target, uint key, uint value);
 
   function revisionID() constant returns(uint) {
-    return data[this][this][uint(sha3("revisionID"))];
+    return data[this][this][uint(keccak256("revisionID"))];
   }
 
   function _incrementRevisionID() private {
-    data[this][this][uint(sha3("revisionID"))] = data[this][this][uint(sha3("revisionID"))] + 1;
+    data[this][this][uint(keccak256("revisionID"))] = data[this][this][uint(keccak256("revisionID"))] + 1;
   }
 
   function put(address target, uint key, uint value) {
