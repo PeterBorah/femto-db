@@ -1,6 +1,6 @@
 pragma solidity ^0.4.8;
 
-contract DB {
+contract FemtoDB {
   // Hierarchy is owner => target => key => value
   mapping(address => mapping(address => mapping(uint => uint))) public data;
 

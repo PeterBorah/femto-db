@@ -1,4 +1,4 @@
-contract("DB", function(accounts) {
+contract("FemtoFemtoDB", function(accounts) {
   it("should store information for each account separately", function(done) {
     var target = accounts[2];
     var key = 23;
@@ -6,7 +6,7 @@ contract("DB", function(accounts) {
     var value_1 = 43;
     var db;
 
-    DB.new().
+    FemtoDB.new().
     then(function(result) { db = result }).
     then(function() { return db.put(target, key, value_0, {from: accounts[0]}) }).
     then(function() { return db.put(target, key, value_1, {from: accounts[1]}); }).
@@ -30,7 +30,7 @@ contract("DB", function(accounts) {
     var value_1 = 43;
     var db;
 
-    DB.new().
+    FemtoDB.new().
     then(function(result) { db = result }).
     then(function() { return db.put(target_0, key, value_0); }).
     then(function() { return db.put(target_1, key, value_1); }).
@@ -50,7 +50,7 @@ contract("DB", function(accounts) {
     var key = 23;
     var value = 42;
 
-    DB.new().
+    FemtoDB.new().
       then(function(db) {
         var put_event = db.LogPut({});
 
@@ -74,7 +74,7 @@ contract("DB", function(accounts) {
     var key = 23;
     var value = 42;
 
-    DB.new().
+    FemtoDB.new().
       then(function(db) {
         var put_event = db.LogPut({});
 
