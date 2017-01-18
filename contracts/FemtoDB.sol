@@ -3,8 +3,15 @@ pragma solidity ^0.4.8;
 contract FemtoDB {
   event LogPut(uint indexed revisionID, address indexed owner, address indexed target, uint key, uint value);
 
+  // Public API
+
   function revisionID() constant returns(uint) {
     return _load(keccak256("revisionID"));
+  }
+
+  function get(address owner, address target, uint key) constant returns(uint) {
+    bytes32 dataLocation = keccak256(owner, target, key);
+    return _load(dataLocation);
   }
 
   function put(address target, uint key, uint value) {
@@ -15,10 +22,7 @@ contract FemtoDB {
     LogPut(revisionID(), msg.sender, target, key, value);
   }
 
-  function get(address owner, address target, uint key) constant returns(uint) {
-    bytes32 dataLocation = keccak256(owner, target, key);
-    return _load(dataLocation);
-  }
+  // Private functions
 
   function _store(bytes32 dataLocation, uint value) private {
     assembly {
