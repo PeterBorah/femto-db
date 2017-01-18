@@ -107,12 +107,6 @@ contract("FemtoDB", function(accounts) {
         });
   });
 
-  it("should not allow external calls to private _put function", function(done) {
-    FemtoDB.new().
-      then(function(db) { return db._put(accounts[1], accounts[1], 1, 2) }).
-      then(assert.fail, function(err) { done(); }).catch(done);
-  });
-
   it("should not allow external calls to private _store function", function(done) {
     FemtoDB.new().
       then(function(db) { return db._store(42, 23) }).

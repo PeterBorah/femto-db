@@ -4,26 +4,20 @@ contract FemtoDB {
   event LogPut(uint indexed revisionID, address indexed owner, address indexed target, uint key, uint value);
 
   function revisionID() constant returns(uint) {
-    return get(this, this, uint(keccak256("revisionID")));
+    return _load(keccak256("revisionID"));
   }
 
   function put(address target, uint key, uint value) {
-    _put(msg.sender, target, key, value);
+    bytes32 dataLocation = keccak256(msg.sender, target, key);
+    _store(dataLocation, value);
+
     _incrementRevisionID();
     LogPut(revisionID(), msg.sender, target, key, value);
   }
 
-  function get(address owner, address target, uint key) constant returns(uint result) {
+  function get(address owner, address target, uint key) constant returns(uint) {
     bytes32 dataLocation = keccak256(owner, target, key);
-    assembly {
-      result := sload(dataLocation)
-    } 
-  }
-
-  function _put(address sender, address target, uint key, uint value) private {
-    bytes32 dataLocation = keccak256(sender, target, key);
-
-    _store(dataLocation, value);
+    return _load(dataLocation);
   }
 
   function _store(bytes32 dataLocation, uint value) private {
@@ -32,8 +26,14 @@ contract FemtoDB {
     }
   }
 
+  function _load(bytes32 dataLocation) private returns(uint result) {
+    assembly {
+      result := sload(dataLocation)
+    }
+  }
+
   function _incrementRevisionID() private {
     uint newVal = revisionID() + 1;
-    _put(this, this, uint(keccak256("revisionID")), newVal);
+    _store(keccak256("revisionID"), newVal);
   }
 }
