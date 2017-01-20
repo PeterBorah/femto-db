@@ -37,7 +37,7 @@ contract FemtoDB {
   }
 
   function _incrementRevisionID() private {
-    uint newVal = revisionID() + 1;
-    _store(keccak256("revisionID"), newVal);
+    uint nextID = revisionID() + 1;
+    _store(keccak256("revisionID"), nextID);
   }
 }
