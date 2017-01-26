@@ -14,16 +14,16 @@ FemtoDB is available on npm as [`femto-db`](https://www.npmjs.com/package/femto-
 
 The core functions are:
 
-`put(address target, uint256 key, uint256 value)`
+* `put(address target, uint256 key, uint256 value)`
 
 which adds data to the database, and:
 
-`get(address owner, address target, uint256 key) constant returns(uint256 value)`
+* `get(address owner, address target, uint256 key) constant returns(uint256 value)`
 
-which retrieves it.
+which retrieves it. To explain each variable:
 
 * `owner` is automatically set to the address that sends the `put` call. You must provide it for a `get`.
-* `target` represents the address the data is "about". In case you want to store data "about" yourself, you can simply provide your own address. 
+* `target` is the address the data is "about". In case you want to store data about yourself, you can simply provide your own address. 
 * `key` is a unsigned integer representing the key.
 * `value` is an unsigned integer representing the value.
 
