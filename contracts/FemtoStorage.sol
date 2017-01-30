@@ -6,6 +6,13 @@ import "./FemtoStorageConsumer.sol";
 // It requires that the contract in which it is imported has a `db()` method that returns a FemtoDB.
 
 library FemtoStorage {
+  enum DataType { Empty, Uint, Address, Bool, List }
+
+  modifier onlyType(uint hash, DataType _type) {
+    if (dataType(hash) != _type) { throw; }
+    _;
+  }
+
   function _db() returns(FemtoDB) {
     return FemtoStorageConsumer(this).db();
   }
@@ -39,15 +46,23 @@ library FemtoStorage {
   }
 
   function put(uint hash, bool value) {
+    _setType(hash, DataType.Bool);
     _db().put(this, hash, toUint(value));
   }
 
   function put(uint hash, uint value) {
+    _setType(hash, DataType.Uint);
     _db().put(this, hash, value);
   }
 
   function put(uint hash, address value) {
+    _setType(hash, DataType.Address);
     _db().put(this, hash, uint(value));
+  }
+
+  function _setType(uint hash, DataType value) {
+    uint typeHash = and(hash, "type");
+    _db().put(this, typeHash, uint(value));
   }
 
   function putString(uint hash, string value) returns(address) {
@@ -57,7 +72,11 @@ library FemtoStorage {
     /* return address(dbValue); */
   }
 
-  function get(uint hash) returns(uint) {
+  function getUint(uint hash) onlyType(hash, DataType.Uint) returns(uint) {
+    return _get(hash);
+  }
+
+  function _get(uint hash) returns(uint) {
     return _db().get(this, this, hash);
   }
 
@@ -94,14 +113,20 @@ library FemtoStorage {
   }
 
   function push(uint hash, uint value) {
-    uint length = get(hash);
+    uint length = _get(hash);
     uint indexHash = and(hash, length);
+
     put(hash, length + 1);
     put(indexHash, value);
+    _setType(hash, DataType.List);
   }
 
-  function length(uint hash) returns(uint) {
-    return get(hash);
+  function dataType(uint hash) returns(DataType) {
+    return DataType(_get(and(hash, "type")));
+  }
+
+  function length(uint hash) onlyType(hash, DataType.List) returns(uint) {
+    return _get(hash);
   }
 
   function index(uint hash, uint _index) returns(uint) {
