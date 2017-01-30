@@ -6,7 +6,7 @@ import "./FemtoStorageConsumer.sol";
 // It requires that the contract in which it is imported has a `db()` method that returns a FemtoDB.
 
 library FemtoStorage {
-  enum DataType { Empty, Uint, Address, Bool, List }
+  enum DataType { Null, Uint, Address, Bool, List }
 
   modifier onlyType(uint hash, DataType _type) {
     if (dataType(hash) != _type) { throw; }
@@ -45,35 +45,44 @@ library FemtoStorage {
     return uint(keccak256(currentHash, nextKey));
   }
 
+  function index(uint hash, uint _index) onlyType(hash, DataType.List) returns(uint) {
+    return and(hash, _index);
+  }
+
   function put(uint hash, bool value) {
-    _setType(hash, DataType.Bool);
-    _db().put(this, hash, toUint(value));
+    setType(hash, DataType.Bool);
+    _put(hash, toUint(value));
   }
 
   function put(uint hash, uint value) {
-    _setType(hash, DataType.Uint);
-    _db().put(this, hash, value);
+    setType(hash, DataType.Uint);
+    _put(hash, value);
   }
 
   function put(uint hash, address value) {
-    _setType(hash, DataType.Address);
-    _db().put(this, hash, uint(value));
+    setType(hash, DataType.Address);
+    _put(hash, uint(value));
   }
 
-  function _setType(uint hash, DataType value) {
+  function setType(uint hash, DataType value) {
     uint typeHash = and(hash, "type");
-    _db().put(this, typeHash, uint(value));
+    _put(typeHash, uint(value));
   }
 
-  function putString(uint hash, string value) returns(address) {
-    /* uint dbValue = uint(_hub().stringWrapperFor(value)); */
-    /*  */
-    /* _db().put(this, hash, dbValue); */
-    /* return address(dbValue); */
+  function _put(uint hash, uint value) {
+    _db().put(this, hash, value);
   }
 
   function getUint(uint hash) onlyType(hash, DataType.Uint) returns(uint) {
     return _get(hash);
+  }
+
+  function getAddress(uint hash) onlyType(hash, DataType.Address) returns(address) {
+    return address(_get(hash));
+  }
+
+  function getBool(uint hash) onlyType(hash, DataType.Bool) returns(bool) {
+    return toBool(_get(hash));
   }
 
   function _get(uint hash) returns(uint) {
@@ -98,27 +107,15 @@ library FemtoStorage {
     return newValue;
   }
 
-  function initializeList(uint hash) returns(address) {
-    return putList(hash, new uint[](0));
-  }
-
-  function putList(uint hash, uint[] value) returns(address) {
-    /* StubListWrapper listWrapper = StubListWrapper(_hub().create(listWrapperID, this)); */
-    /* listWrapper.set(value); */
-    /*  */
-    /* uint dbValue = uint(listWrapper); */
-    /* _db().put(this, hash, dbValue); */
-    /*  */
-    /* return address(listWrapper); */
-  }
-
   function push(uint hash, uint value) {
     uint length = _get(hash);
     uint indexHash = and(hash, length);
 
-    put(hash, length + 1);
-    put(indexHash, value);
-    _setType(hash, DataType.List);
+    setType(hash, DataType.List);
+    _put(hash, length + 1);
+
+    setType(indexHash, DataType.Uint);
+    _put(indexHash, value);
   }
 
   function dataType(uint hash) returns(DataType) {
@@ -127,10 +124,6 @@ library FemtoStorage {
 
   function length(uint hash) onlyType(hash, DataType.List) returns(uint) {
     return _get(hash);
-  }
-
-  function index(uint hash, uint _index) returns(uint) {
-    return and(hash, _index);
   }
 
   function toUint(bool value) constant returns(uint) {
@@ -149,9 +142,5 @@ library FemtoStorage {
     } else {
       throw;
     }
-  }
-
-  function toAddress(uint value) constant returns(address) {
-    return address(value);
   }
 }
