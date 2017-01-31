@@ -50,17 +50,17 @@ library FemtoStorage {
     _put(typeHash, uint(value));
   }
 
-  function put(uint hash, bool value) {
+  function putBool(uint hash, bool value) {
     setType(hash, DataType.Bool);
     _put(hash, _toUint(value));
   }
 
-  function put(uint hash, uint value) {
+  function putUint(uint hash, uint value) {
     setType(hash, DataType.Uint);
     _put(hash, value);
   }
 
-  function put(uint hash, address value) {
+  function putAddress(uint hash, address value) {
     setType(hash, DataType.Address);
     _put(hash, uint(value));
   }
