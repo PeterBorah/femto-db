@@ -158,6 +158,15 @@ contract TestFemtoStorage {
     Assert.equal(24, FemtoStorage.keyFor("bar").index(1).getUint(), "the second value was not set correctly by 'index.put'");
   }
 
+  function testSetLength() {
+    FemtoStorage.keyFor("boop").setLength(3);
+    FemtoStorage.keyFor("boop").index(1).putUint(25);
+    Assert.equal(3, FemtoStorage.keyFor("boop").length(), "length was not set correctly");
+    Assert.equal(0, FemtoStorage.keyFor("boop").index(0).getUint(), "unset location was not 0");
+    Assert.equal(25, FemtoStorage.keyFor("boop").index(1).getUint(), "the second value was not set correctly by 'index.put'");
+    Assert.equal(0, FemtoStorage.keyFor("boop").index(2).getUint(), "unset location was not 0");
+  }
+
   function testPushingAddresses() {
     FemtoStorage.keyFor("bar").push(address(42));
     FemtoStorage.keyFor("bar").push(address(23));

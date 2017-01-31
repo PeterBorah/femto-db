@@ -8,8 +8,9 @@ import "./FemtoStorageConsumer.sol";
 library FemtoStorage {
   enum DataType { Null, Uint, Address, Bool, List }
 
-  modifier onlyType(uint hash, DataType _type) {
-    if (dataType(hash) != _type) { throw; }
+  modifier onlyType(uint hash, DataType expectedType) {
+    DataType actualType = dataType(hash);
+    if (actualType != expectedType && actualType != DataType.Null ) { throw; }
     _;
   }
 
@@ -46,7 +47,7 @@ library FemtoStorage {
   // Functions for setting data
 
   function setType(uint hash, DataType value) {
-    uint typeHash = and(hash, "type");
+    uint typeHash = and(hash, "FemtoDBDataType");
     _put(typeHash, uint(value));
   }
 
@@ -86,7 +87,7 @@ library FemtoStorage {
   // Functions for getting data
 
   function dataType(uint hash) returns(DataType) {
-    return DataType(_get(and(hash, "type")));
+    return DataType(_get(and(hash, "FemtoDBDataType")));
   }
 
   function getUint(uint hash) onlyType(hash, DataType.Uint) returns(uint) {
@@ -115,15 +116,8 @@ library FemtoStorage {
     _push(hash, uint(value), DataType.Address);
   }
 
-  function _push(uint hash, uint value, DataType dataType) {
-    uint length = _get(hash);
-    uint indexHash = and(hash, length);
-
-    setType(hash, DataType.List);
-    _put(hash, length + 1);
-
-    setType(indexHash, dataType);
-    _put(indexHash, value);
+  function setLength(uint hash, uint length) {
+    _put(hash, length);
   }
 
   function length(uint hash) onlyType(hash, DataType.List) returns(uint) {
@@ -143,6 +137,18 @@ library FemtoStorage {
   function _put(uint hash, uint value) {
     _db().put(this, hash, value);
   }
+
+  function _push(uint hash, uint value, DataType dataType) {
+    uint length = _get(hash);
+    uint indexHash = and(hash, length);
+
+    setType(hash, DataType.List);
+    _put(hash, length + 1);
+
+    setType(indexHash, dataType);
+    _put(indexHash, value);
+  }
+
 
   function _toUint(bool value) constant returns(uint) {
     if (value) {
