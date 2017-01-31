@@ -149,16 +149,25 @@ contract TestFemtoStorage {
     FemtoStorage.getBool(hash);
   }
 
-  function testArray() {
-    FemtoStorage.keyFor("bar").push(42);
-    FemtoStorage.keyFor("bar").push(23);
+  function testList() {
+    FemtoStorage.keyFor("bar").push(uint(42));
+    FemtoStorage.keyFor("bar").push(uint(23));
     FemtoStorage.keyFor("bar").index(1).putUint(24);
     Assert.equal(2, FemtoStorage.keyFor("bar").length(), "length was not incremented correctly");
     Assert.equal(42, FemtoStorage.keyFor("bar").index(0).getUint(), "the first was not set correctly by 'push'");
     Assert.equal(24, FemtoStorage.keyFor("bar").index(1).getUint(), "the second value was not set correctly by 'index.put'");
   }
 
-  function testLengthThrowsForNonArray() {
+  function testPushingAddresses() {
+    FemtoStorage.keyFor("bar").push(address(42));
+    FemtoStorage.keyFor("bar").push(address(23));
+    FemtoStorage.keyFor("bar").index(1).putAddress(this);
+    Assert.equal(2, FemtoStorage.keyFor("bar").length(), "length was not incremented correctly");
+    Assert.equal(address(42), FemtoStorage.keyFor("bar").index(0).getAddress(), "the first was not set correctly by 'push'");
+    Assert.equal(this, FemtoStorage.keyFor("bar").index(1).getAddress(), "the second value was not set correctly by 'index.put'");
+  }
+
+  function testLengthThrowsForNonList() {
     FemtoStorage.keyFor("baz").putUint(42);
 
     uint hash = FemtoStorage.keyFor("baz");
@@ -170,7 +179,7 @@ contract TestFemtoStorage {
     hash.length();
   }
 
-  function testIndexThrowsForNonArray() {
+  function testIndexThrowsForNonList() {
     FemtoStorage.keyFor("fleep").putUint(42);
 
     uint hash = FemtoStorage.keyFor("fleep");
