@@ -39,7 +39,7 @@ library FemtoStorage {
     return uint(keccak256(currentHash, nextKey));
   }
 
-  function and(uint currentHash, bytes32 nextKey) returns(uint) {
+  function and(uint currentHash, string nextKey) returns(uint) {
     return uint(keccak256(currentHash, nextKey));
   }
 
