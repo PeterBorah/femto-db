@@ -20,6 +20,13 @@ contract TestFemtoStorage {
     Assert.equal(result, initial, "didn't get back stored value");    
   }
 
+  function testAndWorksWithDifferentDatatypes() {
+    FemtoStorage.keyFor("foo").and("bar").and(uint(2)).and(this).putUint(42);
+    uint result = FemtoStorage.keyFor("foo").and("bar").and(uint(2)).and(this).getUint();
+
+    Assert.equal(result, 42, "didn't get back stored value");
+  }
+
   function testGetUintThrowsForWrongType() {
     FemtoStorage.keyFor("bing").putAddress(42);
 
