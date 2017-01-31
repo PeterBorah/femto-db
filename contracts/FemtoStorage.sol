@@ -65,19 +65,19 @@ library FemtoStorage {
     _put(hash, uint(value));
   }
 
-  function increment(uint hash) returns(uint) {
+  function increment(uint hash) onlyType(hash, DataType.Uint) returns(uint) {
     uint newValue = _db().get(this, this, hash) + 1;
     _db().put(this, hash, newValue);
     return newValue;
   }
 
-  function increaseBy(uint hash, uint amount) returns(uint) {
+  function increaseBy(uint hash, uint amount) onlyType(hash, DataType.Uint) returns(uint) {
     uint newValue = _db().get(this, this, hash) + amount;
     _db().put(this, hash, newValue);
     return newValue;
   }
 
-  function decreaseBy(uint hash, uint amount) returns(uint) {
+  function decreaseBy(uint hash, uint amount) onlyType(hash, DataType.Uint) returns(uint) {
     uint newValue = _db().get(this, this, hash) - amount;
     _db().put(this, hash, newValue);
     return newValue;

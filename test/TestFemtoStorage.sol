@@ -33,6 +33,75 @@ contract TestFemtoStorage {
     FemtoStorage.getUint(hash);
   }
 
+  function testIncrement() {
+    uint initial = 42;
+    FemtoStorage.keyFor("foo").put(initial);
+    
+    FemtoStorage.keyFor("foo").increment();
+    uint result = FemtoStorage.keyFor("foo").getUint();
+
+    Assert.equal(result, 43, "didn't increment correctly");    
+  }
+
+  function testIncrementThrowsForNonUint() {
+    FemtoStorage.keyFor("bing").put(address(42));
+
+    // Needs to be roundabout like this until Solidity has 'catch' blocks
+    uint hash = FemtoStorage.keyFor("bing");
+    bool result = this.call(stringToSig("checkIncrement(uint256)"), hash);
+    Assert.equal(result, false, "increment call didn't throw");
+  }
+
+  function checkIncrement(uint hash) {
+    FemtoStorage.increment(hash);
+  }
+
+  function testIncreaseBy() {
+    uint initial = 42;
+    FemtoStorage.keyFor("foo").put(initial);
+    
+    FemtoStorage.keyFor("foo").increaseBy(3);
+    uint result = FemtoStorage.keyFor("foo").getUint();
+
+    Assert.equal(result, 45, "didn't increase by 3");    
+  }
+
+  function testIncreaseByThrowsForNonUint() {
+    FemtoStorage.keyFor("bing").put(address(42));
+
+    // Needs to be roundabout like this until Solidity has 'catch' blocks
+    uint hash = FemtoStorage.keyFor("bing");
+    bool result = this.call(stringToSig("checkIncreaseBy(uint256)"), hash);
+    Assert.equal(result, false, "increaseBy call didn't throw");
+  }
+
+  function checkIncreaseBy(uint hash) {
+    FemtoStorage.increaseBy(hash, 2);
+  }
+
+  function testDecreaseBy() {
+    uint initial = 42;
+    FemtoStorage.keyFor("foo").put(initial);
+    
+    FemtoStorage.keyFor("foo").decreaseBy(4);
+    uint result = FemtoStorage.keyFor("foo").getUint();
+
+    Assert.equal(result, 38, "didn't decrease by 4");    
+  }
+
+  function testDecreaseByThrowsForNonUint() {
+    FemtoStorage.keyFor("bing").put(address(42));
+
+    // Needs to be roundabout like this until Solidity has 'catch' blocks
+    uint hash = FemtoStorage.keyFor("bing");
+    bool result = this.call(stringToSig("checkDecreaseBy(uint256)"), hash);
+    Assert.equal(result, false, "decreaseBy call didn't throw");
+  }
+
+  function checkDecreaseBy(uint hash) {
+    FemtoStorage.decreaseBy(hash, 3);
+  }
+
   function testStoringAddress() {
     address initial = this;
     FemtoStorage.keyFor("someKey").put(initial);
