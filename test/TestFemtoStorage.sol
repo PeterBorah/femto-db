@@ -14,21 +14,21 @@ contract TestFemtoStorage {
 
   function testStoringUint() {
     uint initial = 42;
-    FemtoStorage.slotFor("foo").putUint(initial);
+    FemtoStorage.slotFor("foo").put(initial);
     uint result = FemtoStorage.slotFor("foo").getUint();
 
     Assert.equal(result, initial, "didn't get back stored value");    
   }
 
   function testAndWorksWithDifferentDatatypes() {
-    FemtoStorage.slotFor("foo").and("bar").and(uint(2)).and(this).putUint(42);
+    FemtoStorage.slotFor("foo").and("bar").and(uint(2)).and(this).put(uint(42));
     uint result = FemtoStorage.slotFor("foo").and("bar").and(uint(2)).and(this).getUint();
 
     Assert.equal(result, 42, "didn't get back stored value");
   }
 
   function testGetUintThrowsForWrongType() {
-    FemtoStorage.slotFor("bing").putAddress(42);
+    FemtoStorage.slotFor("bing").put(address(42));
 
     // Needs to be roundabout like this until Solidity has 'catch' blocks
     uint hash = FemtoStorage.slotFor("bing");
@@ -42,7 +42,7 @@ contract TestFemtoStorage {
 
   function testIncrement() {
     uint initial = 42;
-    FemtoStorage.slotFor("foo").putUint(initial);
+    FemtoStorage.slotFor("foo").put(initial);
     
     FemtoStorage.slotFor("foo").increment();
     uint result = FemtoStorage.slotFor("foo").getUint();
@@ -51,7 +51,7 @@ contract TestFemtoStorage {
   }
 
   function testIncrementThrowsForNonUint() {
-    FemtoStorage.slotFor("bing").putAddress(42);
+    FemtoStorage.slotFor("bing").put(address(42));
 
     // Needs to be roundabout like this until Solidity has 'catch' blocks
     uint hash = FemtoStorage.slotFor("bing");
@@ -65,7 +65,7 @@ contract TestFemtoStorage {
 
   function testIncreaseBy() {
     uint initial = 42;
-    FemtoStorage.slotFor("foo").putUint(initial);
+    FemtoStorage.slotFor("foo").put(initial);
     
     FemtoStorage.slotFor("foo").increaseBy(3);
     uint result = FemtoStorage.slotFor("foo").getUint();
@@ -74,7 +74,7 @@ contract TestFemtoStorage {
   }
 
   function testIncreaseByThrowsForNonUint() {
-    FemtoStorage.slotFor("bing").putAddress(42);
+    FemtoStorage.slotFor("bing").put(address(42));
 
     // Needs to be roundabout like this until Solidity has 'catch' blocks
     uint hash = FemtoStorage.slotFor("bing");
@@ -88,7 +88,7 @@ contract TestFemtoStorage {
 
   function testDecreaseBy() {
     uint initial = 42;
-    FemtoStorage.slotFor("foo").putUint(initial);
+    FemtoStorage.slotFor("foo").put(initial);
     
     FemtoStorage.slotFor("foo").decreaseBy(4);
     uint result = FemtoStorage.slotFor("foo").getUint();
@@ -97,7 +97,7 @@ contract TestFemtoStorage {
   }
 
   function testDecreaseByThrowsForNonUint() {
-    FemtoStorage.slotFor("bing").putAddress(42);
+    FemtoStorage.slotFor("bing").put(address(42));
 
     // Needs to be roundabout like this until Solidity has 'catch' blocks
     uint hash = FemtoStorage.slotFor("bing");
@@ -111,14 +111,14 @@ contract TestFemtoStorage {
 
   function testStoringAddress() {
     address initial = this;
-    FemtoStorage.slotFor("someKey").putAddress(initial);
+    FemtoStorage.slotFor("someKey").put(initial);
     address result = FemtoStorage.slotFor("someKey").getAddress();
 
     Assert.equal(result, initial, "didn't get back stored value");    
   }
 
   function testGetAddressThrowsForWrongType() {
-    FemtoStorage.slotFor("bing").putUint(42);
+    FemtoStorage.slotFor("bing").put(uint(42));
 
     uint hash = FemtoStorage.slotFor("bing");
     bool result = this.call(stringToSig("checkGetAddress(uint256)"), hash);
@@ -131,14 +131,14 @@ contract TestFemtoStorage {
 
   function testStoringBool() {
     bool initial = true;
-    FemtoStorage.slotFor("someKey").putBool(initial);
+    FemtoStorage.slotFor("someKey").put(initial);
     bool result = FemtoStorage.slotFor("someKey").getBool();
 
     Assert.equal(result, initial, "didn't get back stored value");    
   }
 
   function testGetBoolThrowsForWrongType() {
-    FemtoStorage.slotFor("bing").putUint(42);
+    FemtoStorage.slotFor("bing").put(uint(42));
 
     uint hash = FemtoStorage.slotFor("bing");
     bool result = this.call(stringToSig("checkGetBool(uint256)"), hash);
@@ -152,7 +152,7 @@ contract TestFemtoStorage {
   function testList() {
     FemtoStorage.slotFor("bar").push(uint(42));
     FemtoStorage.slotFor("bar").push(uint(23));
-    FemtoStorage.slotFor("bar").index(1).putUint(24);
+    FemtoStorage.slotFor("bar").index(1).put(uint(24));
     Assert.equal(2, FemtoStorage.slotFor("bar").length(), "length was not incremented correctly");
     Assert.equal(42, FemtoStorage.slotFor("bar").index(0).getUint(), "the first was not set correctly by 'push'");
     Assert.equal(24, FemtoStorage.slotFor("bar").index(1).getUint(), "the second value was not set correctly by 'index.put'");
@@ -160,7 +160,7 @@ contract TestFemtoStorage {
 
   function testSetLength() {
     FemtoStorage.slotFor("boop").setLength(3);
-    FemtoStorage.slotFor("boop").index(1).putUint(25);
+    FemtoStorage.slotFor("boop").index(1).put(uint(25));
     Assert.equal(3, FemtoStorage.slotFor("boop").length(), "length was not set correctly");
     Assert.equal(0, FemtoStorage.slotFor("boop").index(0).getUint(), "unset location was not 0");
     Assert.equal(25, FemtoStorage.slotFor("boop").index(1).getUint(), "the second value was not set correctly by 'index.put'");
@@ -170,14 +170,14 @@ contract TestFemtoStorage {
   function testPushingAddresses() {
     FemtoStorage.slotFor("bar").push(address(42));
     FemtoStorage.slotFor("bar").push(address(23));
-    FemtoStorage.slotFor("bar").index(1).putAddress(this);
+    FemtoStorage.slotFor("bar").index(1).put(this);
     Assert.equal(2, FemtoStorage.slotFor("bar").length(), "length was not incremented correctly");
     Assert.equal(address(42), FemtoStorage.slotFor("bar").index(0).getAddress(), "the first was not set correctly by 'push'");
     Assert.equal(this, FemtoStorage.slotFor("bar").index(1).getAddress(), "the second value was not set correctly by 'index.put'");
   }
 
   function testLengthThrowsForNonList() {
-    FemtoStorage.slotFor("baz").putUint(42);
+    FemtoStorage.slotFor("baz").put(uint(42));
 
     uint hash = FemtoStorage.slotFor("baz");
     bool result = this.call(stringToSig("checkLength(uint256)"), hash);
@@ -189,7 +189,7 @@ contract TestFemtoStorage {
   }
 
   function testIndexThrowsForNonList() {
-    FemtoStorage.slotFor("fleep").putUint(42);
+    FemtoStorage.slotFor("fleep").put(uint(42));
 
     uint hash = FemtoStorage.slotFor("fleep");
     bool result = this.call(stringToSig("checkIndex(uint256)"), hash);
