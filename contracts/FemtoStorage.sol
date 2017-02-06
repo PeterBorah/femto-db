@@ -116,6 +116,10 @@ library FemtoStorage {
     _push(hash, uint(value), DataType.Address);
   }
 
+  function push(uint hash, bool value) {
+    _push(hash, _toUint(value), DataType.Bool);
+  }
+
   function setLength(uint hash, uint length) {
     _put(hash, length);
   }

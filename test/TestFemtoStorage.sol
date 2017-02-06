@@ -176,6 +176,15 @@ contract TestFemtoStorage {
     Assert.equal(this, FemtoStorage.slotFor("bar").index(1).getAddress(), "the second value was not set correctly by 'index.put'");
   }
 
+  function testPushingBools() {
+    FemtoStorage.slotFor("bar").push(true);
+    FemtoStorage.slotFor("bar").push(true);
+    FemtoStorage.slotFor("bar").index(1).put(false);
+    Assert.equal(2, FemtoStorage.slotFor("bar").length(), "length was not incremented correctly");
+    Assert.equal(true, FemtoStorage.slotFor("bar").index(0).getBool(), "the first was not set correctly by 'push'");
+    Assert.equal(false, FemtoStorage.slotFor("bar").index(1).getBool(), "the second value was not set correctly by 'index.put'");
+  }
+
   function testLengthThrowsForNonList() {
     FemtoStorage.slotFor("baz").put(uint(42));
 
