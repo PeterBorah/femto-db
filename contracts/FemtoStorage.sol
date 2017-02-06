@@ -16,7 +16,7 @@ library FemtoStorage {
 
   // Functions for building keys
 
-  function slotFor(string key) returns(uint) {
+  function slotFor(uint key) returns(uint) {
     return uint(keccak256(key));
   }
 
@@ -24,15 +24,15 @@ library FemtoStorage {
     return uint(keccak256(key));
   }
 
-  function slotFor(uint key) returns(uint) {
+  function slotFor(string key) returns(uint) {
     return uint(keccak256(key));
   }
 
-  function and(uint currentHash, address nextKey) returns(uint) {
+  function and(uint currentHash, uint nextKey) returns(uint) {
     return uint(keccak256(currentHash, nextKey));
   }
 
-  function and(uint currentHash, uint nextKey) returns(uint) {
+  function and(uint currentHash, address nextKey) returns(uint) {
     return uint(keccak256(currentHash, nextKey));
   }
 
@@ -40,17 +40,7 @@ library FemtoStorage {
     return uint(keccak256(currentHash, nextKey));
   }
 
-  // Functions for setting data
-
-  function setType(uint hash, DataType value) {
-    uint typeHash = and(hash, "FemtoDBDataType");
-    _put(typeHash, uint(value));
-  }
-
-  function put(uint hash, bool value) {
-    setType(hash, DataType.Bool);
-    _put(hash, _toUint(value));
-  }
+  // Functions for putting and getting data
 
   function put(uint hash, uint value) {
     setType(hash, DataType.Uint);
@@ -61,6 +51,25 @@ library FemtoStorage {
     setType(hash, DataType.Address);
     _put(hash, uint(value));
   }
+
+  function put(uint hash, bool value) {
+    setType(hash, DataType.Bool);
+    _put(hash, _toUint(value));
+  }
+
+  function getUint(uint hash) onlyType(hash, DataType.Uint) returns(uint) {
+    return _get(hash);
+  }
+
+  function getAddress(uint hash) onlyType(hash, DataType.Address) returns(address) {
+    return address(_get(hash));
+  }
+
+  function getBool(uint hash) onlyType(hash, DataType.Bool) returns(bool) {
+    return _toBool(_get(hash));
+  }
+
+  // Convenience functions for modifying uints
 
   function increment(uint hash) onlyType(hash, DataType.Uint) returns(uint) {
     uint newValue = _db().get(this, this, hash) + 1;
@@ -80,22 +89,15 @@ library FemtoStorage {
     return newValue;
   }
 
-  // Functions for getting data
+  // Functions related to types
+
+  function setType(uint hash, DataType value) {
+    uint typeHash = and(hash, "FemtoDBDataType");
+    _put(typeHash, uint(value));
+  }
 
   function dataType(uint hash) returns(DataType) {
     return DataType(_get(and(hash, "FemtoDBDataType")));
-  }
-
-  function getUint(uint hash) onlyType(hash, DataType.Uint) returns(uint) {
-    return _get(hash);
-  }
-
-  function getAddress(uint hash) onlyType(hash, DataType.Address) returns(address) {
-    return address(_get(hash));
-  }
-
-  function getBool(uint hash) onlyType(hash, DataType.Bool) returns(bool) {
-    return _toBool(_get(hash));
   }
 
   // Functions for Lists
@@ -148,7 +150,6 @@ library FemtoStorage {
     setType(indexHash, dataType);
     _put(indexHash, value);
   }
-
 
   function _toUint(bool value) constant returns(uint) {
     if (value) {
