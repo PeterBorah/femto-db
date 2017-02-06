@@ -3,7 +3,7 @@ import "./FemtoDB.sol";
 import "./FemtoStorageConsumer.sol";
 
 // This library is designed for a very specific purpose: replacing native contract storage with a FemtoDB.
-// It requires that the contract in which it is imported has a `db()` method that returns a FemtoDB.
+// FemtoStorage should only be used by contracts that implement the FemtoStorageConsumer interface.
 
 library FemtoStorage {
   enum DataType { Null, Uint, Address, Bool, List }
@@ -16,19 +16,19 @@ library FemtoStorage {
 
   // Functions for building keys
 
-  function keyFor(string key) returns(uint) {
+  function slotFor(string key) returns(uint) {
     return uint(keccak256(key));
   }
 
-  function keyFor(address key) returns(uint) {
+  function slotFor(address key) returns(uint) {
     return uint(keccak256(key));
   }
 
-  function keyFor(uint key) returns(uint) {
+  function slotFor(uint key) returns(uint) {
     return uint(keccak256(key));
   }
 
-  function keyFor(uint currentHash, string nextKey) returns(uint) {
+  function slotFor(uint currentHash, string nextKey) returns(uint) {
     return uint(keccak256(currentHash, nextKey));
   }
 
