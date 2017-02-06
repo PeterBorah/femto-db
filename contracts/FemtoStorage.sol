@@ -28,10 +28,6 @@ library FemtoStorage {
     return uint(keccak256(key));
   }
 
-  function slotFor(uint currentHash, string nextKey) returns(uint) {
-    return uint(keccak256(currentHash, nextKey));
-  }
-
   function and(uint currentHash, address nextKey) returns(uint) {
     return uint(keccak256(currentHash, nextKey));
   }
