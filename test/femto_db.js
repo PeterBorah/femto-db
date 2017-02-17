@@ -1,3 +1,5 @@
+var FemtoDB = artifacts.require("FemtoDB.sol");
+
 contract("FemtoDB", function(accounts) {
   it("should store information for each account separately", function(done) {
     var target = accounts[2];
